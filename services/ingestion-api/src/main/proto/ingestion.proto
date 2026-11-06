@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package com.systemscale.ingestion;
+
+option java_multiple_files = true;
+option java_package = "com.systemscale.ingestion.grpc";
+
+// The central orchestration contract for streaming ingestion data
+service IngestionService {
+    // Unary RPC: Ingests a single tracking event into the processing log
+    rpc RouteTelemetryEvent (TelemetryEventRequest) returns (IngestionResponse);
+}
+
+// Struct representing the core telemetry packet payload
+message TelemetryEventRequest {
+    string idempotency_key = 1; // Used by our system design to prevent duplicate database writes
+    string device_id = 2;       // The unique identifier of the source device
+    string metric_name = 3;     // e.g., "location_update", "payment_processed"
+    bytes payload_bytes = 4;    // Raw unstructured binary blob payload to save network allocation
+    int64 timestamp_ms = 5;     // Epoch millisecond timestamp of the event trigger
+}
+
+// Operational response status metadata
+message IngestionResponse {
+    enum StatusCode {
+        SUCCESS = 0;
+        RATE_LIMITED = 1;
+        DUPLICATE = 2;
+        INTERNAL_FAILURE = 3;
+    }
+    StatusCode status = 1;
+    string tracking_id = 2;
+    string message = 3;
+}
