@@ -1,0 +1,20 @@
+# Build and Target Directories
+target/
+**/target/
+*.class
+*.jar
+*.war
+
+# IDE and OS Specific Files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Infrastructure & Secrets Environment
+.terraform/
+*.tfstate*
+.env
+*.pem
+kubeconfig
